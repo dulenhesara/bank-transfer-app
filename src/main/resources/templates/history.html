@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Account History</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="topbar">
+    <h1>Bank Transfer System</h1>
+</header>
+
+<div class="container">
+    <div class="card">
+        <a th:href="@{/}" class="btn btn-secondary">&larr; Back to Dashboard</a>
+        <h3 style="margin-top:16px;" th:text="'Transaction History: ' + ${customer.fullName} + ' (' + ${customer.accountNumber} + ')'"></h3>
+        <p><strong>Current Balance:</strong> LKR <span th:text="${customer.balance}"></span></p>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>From Account</th>
+                <th>To Account</th>
+                <th>Amount (LKR)</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Date/Time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tx : ${transactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.fromAccount}"></td>
+                <td th:text="${tx.toAccount}"></td>
+                <td th:text="${tx.amount}"></td>
+                <td th:text="${tx.status}" th:class="${tx.status}"></td>
+                <td th:text="${tx.description}"></td>
+                <td th:text="${tx.createdAt}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
