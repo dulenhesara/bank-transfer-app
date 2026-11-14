@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bank Transfer System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="topbar">
+    <h1>Bank Transfer System</h1>
+</header>
+
+<div class="container">
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}"></div>
+
+    <div class="stats">
+        <div class="card"><strong>Total Customers</strong><h2 th:text="${customerCount}">0</h2></div>
+        <div class="card"><strong>Total Bank Balance (LKR)</strong><h2 th:text="${totalBalance}">0.00</h2></div>
+        <div class="card"><strong>Successful Transfers</strong><h2 class="SUCCESS" th:text="${successCount}">0</h2></div>
+        <div class="card"><strong>Failed Transfers</strong><h2 class="FAILED" th:text="${failedCount}">0</h2></div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Transfer Money</h3>
+            <form th:action="@{/transfer}" th:object="${transferRequest}" method="post">
+                <label>From Account:</label>
+                <input type="text" th:field="*{fromAccount}" placeholder="e.g. 100001" required>
+                <div class="field-error" th:if="${#fields.hasErrors('fromAccount')}" th:errors="*{fromAccount}"></div>
+
+                <label>To Account:</label>
+                <input type="text" th:field="*{toAccount}" placeholder="e.g. 100002" required>
+                <div class="field-error" th:if="${#fields.hasErrors('toAccount')}" th:errors="*{toAccount}"></div>
+
+                <label>Amount (LKR):</label>
+                <input type="number" step="0.01" th:field="*{amount}" placeholder="e.g. 5000.00">
+                <div class="field-error" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+
+                <label class="checkbox-row">
+                    <input type="checkbox" th:field="*{simulateFailure}"> Simulate a system failure (force rollback)
+                </label>
+                <button type="submit" style="width:100%;">Transfer</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Add Customer</h3>
+            <form th:action="@{/customers}" method="post">
+                <label>Account Number:</label>
+                <input type="text" name="accountNumber" placeholder="e.g. 100004" required>
+                <label>Full Name:</label>
+                <input type="text" name="fullName" placeholder="e.g. Nuwan" required>
+                <label>Email:</label>
+                <input type="email" name="email" placeholder="nuwan@example.com" required>
+                <label>Initial Balance (LKR):</label>
+                <input type="number" step="0.01" name="initialBalance" placeholder="15000.00" required>
+                <button type="submit" style="width:100%;">Add Customer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Customers</h3>
+        <form th:action="@{/}" method="get" class="search-bar">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by name...">
+            <button type="submit">Search</button>
+            <a th:href="@{/}" class="btn btn-secondary">Reset</a>
+        </form>
+        <table>
+            <thead>
+            <tr>
+                <th>Account Number</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Balance (LKR)</th>
+                <th>History</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${customers}">
+                <td th:text="${c.accountNumber}"></td>
+                <td th:text="${c.fullName}"></td>
+                <td th:text="${c.email}"></td>
+                <td th:text="${c.balance}"></td>
+                <td><a th:href="@{/accounts/{acc}/history(acc=${c.accountNumber})}">View</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Latest Transactions</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Amount (LKR)</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Created At</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tx : ${transactions}">
+                <td th:text="${tx.id}"></td>
+                <td th:text="${tx.fromAccount}"></td>
+                <td th:text="${tx.toAccount}"></td>
+                <td th:text="${tx.amount}"></td>
+                <td th:text="${tx.status}" th:class="${tx.status}"></td>
+                <td th:text="${tx.description}"></td>
+                <td th:text="${tx.createdAt}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
